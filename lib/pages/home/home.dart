@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: CustomScrollView(
         slivers: <Widget>[
           CupertinoSliverNavigationBar(
-            largeTitle: const Text('Mail'),
+            largeTitle: const Text('Mailboxes'),
             trailing: CupertinoButton(
               padding: EdgeInsets.zero,
               child: const Text('Add'),
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: state.emailData.emails.map((email) {
                                 // TMAccount acc = accountFromJson(email.toJson(), email.password);
                                 return SlidableCupertinoTile(
-                                  additionalText: '0',
+                                  additionalText: '',
                                   isLoading: false,
                                   onPress: () => Navigator.push(context, CupertinoPageRoute(builder: (context) => EmailList(emailAccount: email))),
                                   onEndSwipe: () {

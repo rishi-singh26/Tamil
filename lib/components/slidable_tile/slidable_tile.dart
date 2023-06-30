@@ -11,7 +11,8 @@ class SlidableCupertinoTile extends StatelessWidget {
   final bool isLoading;
   final String additionalText;
   final String title;
-  final String? subTitle;
+  final TextStyle? titleStyle;
+  final Widget? subTitle;
   final IconData tileIcon;
   final Color iconBackColor;
   final bool? onlyIcon;
@@ -26,6 +27,7 @@ class SlidableCupertinoTile extends StatelessWidget {
     this.onStartSwipe,
     this.startActions,
     required this.title,
+    this.titleStyle,
     this.subTitle,
     required this.tileIcon,
     required this.iconBackColor,
@@ -38,8 +40,8 @@ class SlidableCupertinoTile extends StatelessWidget {
     if (endActions == null && startActions == null) {
       if (isNotched == false) {
         return CupertinoListTile(
-          title: Text(title),
-          subtitle: subTitle == null ? null : Text(subTitle ?? ''),
+          title: Text(title, style: titleStyle),
+          subtitle: subTitle,
           leading: onlyIcon == true ? Icon(tileIcon) : DummyIcon(color: iconBackColor, icon: tileIcon),
           additionalInfo: isLoading ? const CupertinoActivityIndicator(radius: 8) : Text(additionalText),
           trailing: const CupertinoListTileChevron(),
@@ -47,8 +49,8 @@ class SlidableCupertinoTile extends StatelessWidget {
         );
       }
       return CupertinoListTile.notched(
-        title: Text(title),
-        subtitle: subTitle == null ? null : Text(subTitle ?? ''),
+        title: Text(title, style: titleStyle),
+        subtitle: subTitle,
         leading: onlyIcon == true ? Icon(tileIcon) : DummyIcon(color: iconBackColor, icon: tileIcon),
         additionalInfo: isLoading ? const CupertinoActivityIndicator(radius: 8) : Text(additionalText),
         trailing: const CupertinoListTileChevron(),
@@ -81,16 +83,16 @@ class SlidableCupertinoTile extends StatelessWidget {
             ),
       child: isNotched == false
           ? CupertinoListTile(
-              title: Text(title),
-              subtitle: subTitle == null ? null : Text(subTitle ?? ''),
+              title: Text(title, style: titleStyle),
+              subtitle: subTitle,
               leading: onlyIcon == true ? Icon(tileIcon) : DummyIcon(color: iconBackColor, icon: tileIcon),
               additionalInfo: isLoading ? const CupertinoActivityIndicator(radius: 8) : Text(additionalText),
               trailing: const CupertinoListTileChevron(),
               onTap: onPress,
             )
           : CupertinoListTile.notched(
-              title: Text(title),
-              subtitle: subTitle == null ? null : Text(subTitle ?? ''),
+              title: Text(title, style: titleStyle),
+              subtitle: subTitle,
               leading: onlyIcon == true ? Icon(tileIcon) : DummyIcon(color: iconBackColor, icon: tileIcon),
               additionalInfo: isLoading ? const CupertinoActivityIndicator(radius: 8) : Text(additionalText),
               trailing: const CupertinoListTileChevron(),
