@@ -8,6 +8,8 @@ import 'package:tmail/redux/temp_email/temp_email_action.dart';
 import 'package:tmail/services/email.service.dart';
 import 'package:tmail/styles/app_colors.dart';
 
+enum ActionType { newAddress, login }
+
 class AddEmail extends StatefulWidget {
   const AddEmail({super.key});
 
@@ -18,6 +20,7 @@ class AddEmail extends StatefulWidget {
 class _AddEmailState extends State<AddEmail> {
   late TextEditingController _emailAddressController;
   late TextEditingController _passwordController;
+  late TextEditingController _accountNameController;
   late FocusNode _passwordBoxFocusNode;
   int _selectedDomain = 0;
   bool _shouldGenerateRandomPass = true;
@@ -25,10 +28,12 @@ class _AddEmailState extends State<AddEmail> {
   double _passwordBoxHeight = 0;
   final double _kItemExtent = 32.0;
   List<TMDomain> _domainNames = [];
+  ActionType _selectedSegment = ActionType.newAddress;
 
   @override
   void initState() {
     super.initState();
+    _accountNameController = TextEditingController(text: '');
     _emailAddressController = TextEditingController(text: '');
     _passwordController = TextEditingController(text: '');
     _passwordBoxFocusNode = FocusNode();
@@ -44,6 +49,7 @@ class _AddEmailState extends State<AddEmail> {
 
   @override
   void dispose() {
+    _accountNameController.dispose();
     _emailAddressController.dispose();
     _passwordController.dispose();
     _passwordBoxFocusNode.dispose();
@@ -107,7 +113,9 @@ class _AddEmailState extends State<AddEmail> {
         domain: _domainNames.isEmpty ? null : _domainNames[_selectedDomain],
       );
       // ignore: use_build_context_synchronously
-      StoreProvider.of<AppState>(context).dispatch(AddTempEmailAction(newEmail: TempEmail.fromJson(account.toJson())));
+      StoreProvider.of<AppState>(context).dispatch(AddTempEmailAction(
+        newEmail: TempEmail.fromJson(account.toJson(), _accountNameController.text),
+      ));
       // ignore: use_build_context_synchronously
       Navigator.canPop(context) ? Navigator.pop(context) : null;
     } catch (e) {
@@ -142,14 +150,60 @@ class _AddEmailState extends State<AddEmail> {
               },
             ),
             largeTitle: const Text('New Address'),
+            middle: CupertinoSlidingSegmentedControl<ActionType>(
+              backgroundColor: CupertinoColors.systemGrey2,
+              groupValue: _selectedSegment,
+              onValueChanged: (ActionType? value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedSegment = value;
+                  });
+                }
+              },
+              children: const <ActionType, Widget>{
+                ActionType.newAddress: Text('New'),
+                ActionType.login: Text('Login'),
+              },
+            ),
             trailing: CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () => _registerAccount(context),
-              child: const Text('Create'),
+              child: const Text('Done', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             backgroundColor: AppColors.navBarColor,
             border: null,
             stretch: true,
+          ),
+          // SliverToBoxAdapter(
+          //   child: OrientationBuilder(builder: (contex, Orientation orientation) {
+          //     return Padding(
+          //       padding: const EdgeInsets.symmetric(horizontal: 80),
+          //       child: CupertinoSlidingSegmentedControl<ActionType>(
+          //         backgroundColor: CupertinoColors.systemGrey2,
+          //         groupValue: _selectedSegment,
+          //         onValueChanged: (ActionType? value) {
+          //           if (value != null) {
+          //             setState(() {
+          //               _selectedSegment = value;
+          //             });
+          //           }
+          //         },
+          //         children: const <ActionType, Widget>{
+          //           ActionType.newAddress: Text('New'),
+          //           ActionType.login: Text('Login'),
+          //         },
+          //       ),
+          //     );
+          //   }),
+          // ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
+              child: CupertinoTextField(
+                controller: _accountNameController,
+                placeholder: 'Name (Optional)',
+              ),
+            ),
           ),
           SliverToBoxAdapter(
             child: Padding(

@@ -11,7 +11,7 @@ class EmailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    message.see();
+    message.seen ? null : message.see();
     final theme = CupertinoTheme.of(context);
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground,
@@ -30,6 +30,8 @@ class EmailView extends StatelessWidget {
             Text(message.subject, style: theme.textTheme.navTitleTextStyle.copyWith(fontSize: 20)),
             spacer,
             Text(message.text),
+            spacer,
+            if (message.hasAttachments) Text(message.attachments[0].name),
           ],
         ),
       ),
@@ -77,7 +79,12 @@ class AddressView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(DateService.formatDate(message.createdAt), style: theme.textTheme.tabLabelTextStyle.copyWith(fontSize: 14)),
+                Text(
+                    DateService.getReadableDate(
+                      message.createdAt,
+                      isTwelveHourFormat: MediaQuery.of(context).alwaysUse24HourFormat,
+                    ),
+                    style: theme.textTheme.tabLabelTextStyle.copyWith(fontSize: 14)),
                 const SizedBox(width: 10),
                 if (message.hasAttachments) Icon(CupertinoIcons.paperclip, size: 14, color: theme.textTheme.tabLabelTextStyle.color)
               ],

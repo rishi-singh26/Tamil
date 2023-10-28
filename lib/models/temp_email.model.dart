@@ -1,5 +1,6 @@
 class TempEmail {
   final String id;
+  final String name;
   final String address;
   final String password;
   final DateTime createdAt;
@@ -11,6 +12,7 @@ class TempEmail {
 
   TempEmail({
     required this.address,
+    required this.name,
     required this.id,
     required this.password,
     required this.createdAt,
@@ -23,6 +25,7 @@ class TempEmail {
 
   TempEmail.initial()
       : address = '',
+        name = '',
         id = '',
         password = '',
         createdAt = DateTime.now(),
@@ -32,8 +35,9 @@ class TempEmail {
         updatedAt = DateTime.now(),
         used = 0;
 
-  TempEmail.fromJson(Map<String, dynamic> json)
+  TempEmail.fromJson(Map<String, dynamic> json, String name)
       : address = json.containsKey('address') ? json['address'] : '',
+        name = json.containsKey('name') ? json['name'] : name,
         id = json.containsKey('id') ? json['id'] : '',
         password = json.containsKey('password') ? json['password'] : '',
         createdAt = json.containsKey('createdAt') ? DateTime.parse(json['createdAt']) : DateTime.now(),
@@ -45,6 +49,7 @@ class TempEmail {
 
   Map<String, dynamic> toJson() => {
         'address': address,
+        'name': name,
         'id': id,
         'password': password,
         'createdAt': createdAt.toIso8601String(),

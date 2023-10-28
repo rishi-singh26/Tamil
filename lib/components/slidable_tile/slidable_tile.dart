@@ -64,10 +64,11 @@ class SlidableCupertinoTile extends StatelessWidget {
           : ActionPane(
               dismissible: DismissiblePane(
                 onDismissed: () async {
-                  await onEndSwipe!();
+                  onEndSwipe != null ? await onEndSwipe!() : null;
                 },
               ),
-              motion: const ScrollMotion(),
+              motion: const DrawerMotion(),
+              extentRatio: 0.5,
               children: endActions ?? [],
             ),
       startActionPane: startActions == null
@@ -75,10 +76,10 @@ class SlidableCupertinoTile extends StatelessWidget {
           : ActionPane(
               dismissible: DismissiblePane(
                 onDismissed: () async {
-                  await onStartSwipe!();
+                  onStartSwipe != null ? await onStartSwipe!() : null;
                 },
               ),
-              motion: const ScrollMotion(),
+              motion: const DrawerMotion(),
               children: startActions ?? [],
             ),
       child: isNotched == false

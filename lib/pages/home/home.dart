@@ -1,12 +1,17 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:mailtm_client/mailtm_client.dart';
 import 'package:tmail/components/custom_slidable/src/actions.dart';
 import 'package:tmail/components/custom_slidable/src/auto_close_behavior.dart';
 import 'package:tmail/components/slidable_tile/slidable_tile.dart';
+import 'package:tmail/models/temp_email.model.dart';
 import 'package:tmail/pages/add_email/add_email.dart';
 import 'package:tmail/pages/email_list/email_list.dart';
+import 'package:tmail/pages/mailbox_info/mailbox_info.dart';
 import 'package:tmail/redux/store/app.state.dart';
 import 'package:tmail/redux/temp_email/temp_email_action.dart';
+import 'package:tmail/services/alert.service.dart';
 import 'package:tmail/styles/app_colors.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -19,6 +24,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  void _confirmDelete(BuildContext context, TempEmail emailBox) {
+    AlertService.showAlertDialog(
+      context,
+      AlertContent(
+        actionBtnContent: ActionBtnContent(text: 'Delete', onAction: () => _deleteMailBox(context, emailBox), isDestructive: true),
+        content: "Are you sure you want to delete this mailbox? All the emails in this mailbox will be permanently deleted.",
+        title: 'Alert',
+      ),
+    );
+  }
+
+  Future<void> _deleteMailBox(BuildContext context, TempEmail emailBox) async {
+    try {
+      StoreProvider.of<AppState>(context).dispatch(RemoveOneTempEmail(removedEmail: emailBox));
+      TMAccount account = await MailTm.login(id: emailBox.id, address: emailBox.address, password: emailBox.password);
+      account.delete();
+    } catch (e) {
+      if (kDebugMode) print('Error in _deleteMailBox $e');
+    }
+  }
+
+  void _navigateToDetails(TempEmail email) {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) {
+          return MailBoxInfo(mailBox: email);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -42,13 +79,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             ),
-            leading: CupertinoButton(
-              padding: EdgeInsets.zero,
-              child: const Text('Delete All'),
-              onPressed: () {
-                StoreProvider.of<AppState>(context).dispatch(RemoveAllTempEmail());
-              },
-            ),
+            // leading: CupertinoButton(
+            //   padding: EdgeInsets.zero,
+            //   child: const Text('Delete All'),
+            //   onPressed: () {
+            //     StoreProvider.of<AppState>(context).dispatch(RemoveAllTempEmail());
+            //   },
+            // ),
             backgroundColor: AppColors.navBarColor,
             border: null,
             stretch: true,
@@ -68,30 +105,27 @@ class _MyHomePageState extends State<MyHomePage> {
                                   additionalText: '',
                                   isLoading: false,
                                   onPress: () => Navigator.push(context, CupertinoPageRoute(builder: (context) => EmailList(emailAccount: email))),
-                                  onEndSwipe: () {
-                                    print("End Swipe");
-                                  },
+                                  onEndSwipe: () => _confirmDelete(context, email),
+                                  onStartSwipe: () => _navigateToDetails(email),
                                   endActions: [
                                     SlidableAction(
-                                      onPressed: (context) {
-                                        print("Action Pressed");
-                                      },
-                                      backgroundColor: CupertinoColors.systemPurple,
-                                      foregroundColor: CupertinoColors.white,
-                                      icon: CupertinoIcons.info_circle,
-                                    ),
-                                    SlidableAction(
-                                      onPressed: (context) {
-                                        print("Action Pressed");
-                                      },
+                                      onPressed: (context) => _confirmDelete(context, email),
                                       backgroundColor: CupertinoColors.systemRed,
                                       foregroundColor: CupertinoColors.white,
                                       icon: CupertinoIcons.trash,
                                     ),
                                   ],
-                                  title: email.address,
+                                  startActions: [
+                                    SlidableAction(
+                                      onPressed: (context) => _navigateToDetails(email),
+                                      backgroundColor: CupertinoColors.systemYellow,
+                                      foregroundColor: CupertinoColors.white,
+                                      icon: CupertinoIcons.info_circle,
+                                    ),
+                                  ],
+                                  title: email.name.isNotEmpty ? email.name : email.address,
                                   iconBackColor: CupertinoColors.activeGreen,
-                                  tileIcon: CupertinoIcons.mail,
+                                  tileIcon: CupertinoIcons.tray,
                                   onlyIcon: true,
                                   isNotched: false,
                                 );

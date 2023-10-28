@@ -12,7 +12,7 @@ class TempEmailState {
     try {
       List<TempEmail> emails = [];
       for (Map<String, dynamic> email in json) {
-        emails.add(TempEmail.fromJson(email));
+        emails.add(TempEmail.fromJson(email, 'Name from persistance'));
       }
       return emails;
     } catch (e) {

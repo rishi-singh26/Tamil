@@ -24,7 +24,19 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           return const CupertinoApp(
             title: 'Flutter Demo',
-            theme: CupertinoThemeData(),
+            theme: CupertinoThemeData(
+              primaryColor: Color(0XFFBA1F33),
+            ),
+            // theme: state.settings.appSettings.getUseSystemTheme == true
+            //     ? const CupertinoThemeData(
+            //         primaryColor: Color(0xffdcb13d),
+            //       )
+            //     : CupertinoThemeData(
+            //         brightness: state.settings.appSettings.getDarkMode == true
+            //             ? Brightness.dark
+            //             : Brightness.light,
+            //         primaryColor: const Color(0xffdcb13d),
+            //       ),
             home: MyHomePage(title: 'Temp Mail'),
             localizationsDelegates: <LocalizationsDelegate<dynamic>>[
               DefaultMaterialLocalizations.delegate,
